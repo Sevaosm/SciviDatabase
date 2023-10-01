@@ -1,12 +1,16 @@
+# загрузка данных и создание таблицы
 import pandas as pd
 import psycopg2
 from psycopg2 import Error
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
-# загружаем наш csv
-bike = pd.read_csv(r'bike.csv')
+# для вставки данных
+from sqlalchemy import create_engine
 
-del bike['id']
+
+
+# загружаем наш csv, получая Датафрейм
+bike = pd.read_csv(r'bikes_info.csv')
 
 # хранение названий атрибутов
 data_head = bike.columns.values.tolist()
@@ -18,31 +22,43 @@ data_types = bike.dtypes.tolist()
 data = bike.values.tolist()
 
 
-sql = ''
+sql_create_table = ''
 
 for i in range(len(data_head)):
     if (i == 0):
-        sql += 'CREATE TABLE graphs (id integer PRIMARY KEY NOT NULL, '
+        sql_create_table += 'CREATE TABLE graphs (id integer PRIMARY KEY NOT NULL, '
     else:
-        sql += str(data_head[i])
+        sql_create_table += str(data_head[i])
         match data_types[i]:
             case 'int64':
-                sql += ' integer'
+                sql_create_table += ' integer'
             case 'float64':
-                sql += ' double precision'
-            case '0':
-                sql += ' <ДАТА>'
-            case '<bool>':
-                sql += ' boolean'
-        sql += ' NOT NULL'
+                sql_create_table += ' double precision'
+            case 'object':
+                sql_create_table += ' text'
+        sql_create_table += ' NOT NULL'
         if (i == len(data_head) - 1):
-            sql += ');'
+            sql_create_table += ');'
         else:
-            sql += ', '
+            sql_create_table += ', '
+
+print(tuple(data[0]))
+
+
+sql_insert = 'INSERT INTO graphs VALUES '
+
+for i in range(len(data)):
+    sql_insert += str(tuple(data[i]))
+    if (i == len(data) - 1):
+        sql_insert += ';'
+    else:
+        sql_insert += ', '
 
 
 
-print(sql)
+
+
+
 
 
 
@@ -58,11 +74,15 @@ try:
     # Курсор для выполнения операций с базой данных
     cursor = connection.cursor()
 
-    create_table_query = sql
-
-    cursor.execute(create_table_query)
+    cursor.execute(sql_create_table)
+    cursor.execute(sql_insert)
 
     print("Таблица успешно создана в PostgreSQL")
+
+
+
+    # bike.to_sql('graphs', con=connection, if_exists='replace', index=False)
+
 
     # Распечатать сведения о PostgreSQL
     #print("Информация о сервере PostgreSQL")
@@ -82,15 +102,26 @@ finally:
         print("Соединение с PostgreSQL закрыто")
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # bike.drop(['season', 'yr', 'mnth', 'registered', 'cnt'], axis=1, inplace=True)
 
 # bike.to_csv('bikes_info.csv')
 
-
 # просмотр первыйх 5 строк
 # print(data)
 
-
 # !!!!!!!!!!!!!
 # Cведения о датафрейме, выходит общая информация о нём вроде заголовка, количества значений, типов данных столбцов.
-# print(bike.info())
