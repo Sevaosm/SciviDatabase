@@ -42,7 +42,7 @@ for i in range(len(data_head)):
         else:
             sql_create_table += ', '
 
-print(tuple(data[0]))
+# print(tuple(data[0]))
 
 
 sql_insert = 'INSERT INTO graphs VALUES '
