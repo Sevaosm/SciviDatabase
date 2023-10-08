@@ -1,23 +1,51 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-    <title>The Last Social Media You'll Ever Need | Yatube</title>
-    <link rel="stylesheet" href="style.css">
-</head>
+    <head>
 
-<body>
-    {% include "header.html" %}
-    <nav id="sidebar">
-        <ul>
-            <li><a href="/">Главная</a></li>
-            <li><a href="/about/">О сайте</a></li>
-            <li><a href="/list/">Сообщения</a></li>
-        </ul>
-    </nav>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>Scivi Database</title>
 
-    <div id="content">
-        Контент страницы
-    </div>
-    {% include "footer.html" %}
-</body>
+        <style>
+            .table {
+                display: table;
+                width: 100%;
+            }
+
+            .table-row {
+                display: table-row;
+            }
+
+            .table-header {
+                display: table-header-group;
+                font-weight: bold;
+            }
+
+            .table-cell {
+                display: table-cell;
+                padding: 5px;
+            }
+
+            img {
+                border: 1px solid #000000;
+                width: 100px;
+                height: 100px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Последние обновления на сайте</h1>
+
+        <div class="table">
+            <div class="table-row table-header">
+                {{ namesAttributes|safe }}
+            </div>
+
+            {% for dataStr in data %}
+                {% include "indexSup.html" %}
+            {% endfor %}
+        </div>
+        {% load static %}
+        <img src="{% static 'images/graphs1.gif' %}">
+    </body>
 </html>
